@@ -1,4 +1,4 @@
-# project/api/users.py
+# project/api/users/views.py
 
 
 from flask import Blueprint, request
@@ -6,7 +6,7 @@ from flask_restful import Api, Resource
 from sqlalchemy import exc
 
 from project import db
-from project.api.models import User
+from project.api.users.models import User
 
 users_blueprint = Blueprint("users", __name__)
 api = Api(users_blueprint)
