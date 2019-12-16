@@ -4,13 +4,12 @@
 import os
 
 from flask import Flask
-from flask_admin import Admin  # new
+from flask_admin import Admin
 from flask_sqlalchemy import SQLAlchemy
 
 
 # instantiate the extensions
 db = SQLAlchemy()
-# new
 admin = Admin(template_mode="bootstrap3")
 
 
@@ -25,17 +24,13 @@ def create_app(script_info=None):
 
     # set up extensions
     db.init_app(app)
-    # new
     if os.getenv("FLASK_ENV") == "development":
         admin.init_app(app)
 
-    # register blueprints
-    from project.api.ping import ping_blueprint
+    # register api
+    from project.api import api
 
-    app.register_blueprint(ping_blueprint)
-    from project.api.users.views import users_blueprint
-
-    app.register_blueprint(users_blueprint)
+    api.init_app(app)
 
     # shell context for flask cli
     @app.shell_context_processor
