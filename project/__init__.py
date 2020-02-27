@@ -1,40 +1,25 @@
 # project/__init__.py
 
 
-import os
-
-from flask import Flask
-from flask_admin import Admin
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, jsonify
+from flask_restx import Resource, Api
 
 
-# instantiate the extensions
-db = SQLAlchemy()
-admin = Admin(template_mode="bootstrap3")
+# instantiate the app
+app = Flask(__name__)
+
+api = Api(app)
+
+# set config
+app.config.from_object('project.config.DevelopmentConfig')
 
 
-def create_app(script_info=None):
+class Ping(Resource):
+    def get(self):
+        return {
+        'status': 'success',
+        'message': 'pong!'
+    }
 
-    # instantiate the app
-    app = Flask(__name__)
 
-    # set config
-    app_settings = os.getenv("APP_SETTINGS")
-    app.config.from_object(app_settings)
-
-    # set up extensions
-    db.init_app(app)
-    if os.getenv("FLASK_ENV") == "development":
-        admin.init_app(app)
-
-    # register api
-    from project.api import api
-
-    api.init_app(app)
-
-    # shell context for flask cli
-    @app.shell_context_processor
-    def ctx():
-        return {"app": app, "db": db}
-
-    return app
+api.add_resource(Ping, '/ping')
