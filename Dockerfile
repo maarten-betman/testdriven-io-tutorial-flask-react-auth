@@ -14,9 +14,11 @@ ENV PYTHONUNBUFFERED 1
 # set working directory
 WORKDIR /usr/src/app
 
-# add and install requirements
+# install dependencies
+RUN pip install --upgrade pip
 COPY ./requirements.txt /usr/src/app/requirements.txt
-RUN pip install -r requirements.txt
+COPY ./requirements-dev.txt /usr/src/app/requirements-dev.txt
+RUN pip install -r requirements-dev.txt
 
 # add entrypoint.sh
 COPY ./entrypoint.sh /usr/src/app/entrypoint.sh
