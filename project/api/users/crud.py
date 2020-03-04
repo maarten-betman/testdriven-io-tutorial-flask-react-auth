@@ -1,8 +1,8 @@
-# project/api/crud.py
+# project/api/users/crud.py
 
 
 from project import db
-from project.api.models import User
+from project.api.users.models import User
 
 
 def get_all_users():

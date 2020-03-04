@@ -1,10 +1,10 @@
-# project/api/users.py
+# project/api/users/views.py
 
 
 from flask import Blueprint, request
 from flask_restx import Api, Resource, fields
 
-from project.api.crud import (  # noqa isort:skip
+from project.api.users.crud import (  # noqa isort:skip
     add_user,
     delete_user,
     get_all_users,
