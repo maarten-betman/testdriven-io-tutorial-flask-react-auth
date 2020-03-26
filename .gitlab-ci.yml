@@ -21,6 +21,7 @@ build:
         --cache-from $IMAGE:latest
         --tag $IMAGE:latest
         --file ./Dockerfile.prod
+        --build-arg SECRET_KEY=$SECRET_KEY
         "."
     - docker push $IMAGE:latest
 
@@ -32,10 +33,14 @@ test:
   variables:
     POSTGRES_DB: users
     POSTGRES_USER: runner
-    POSTGRES_PASSWORD: ""
-    DATABASE_TEST_URL: postgres://runner@postgres:5432/users
+    POSTGRES_PASSWORD: runner
+    DATABASE_TEST_URL: postgres://runner:runner@postgres:5432/users
     FLASK_ENV: development
   script:
+    - python3.8 -m venv env
+    - source env/bin/activate
+    - pip install -r requirements.txt
+    - pip install black flake8 isort pytest
     - pytest "project/tests" -p no:warnings
     - flake8 project
     - black project --check
@@ -47,7 +52,7 @@ deploy:
     - docker:dind
   variables:
     DOCKER_DRIVER: overlay2
-    HEROKU_APP_NAME: young-depths-02770
+    HEROKU_APP_NAME: thawing-savannah-60405
     HEROKU_REGISTRY_IMAGE: registry.heroku.com/${HEROKU_APP_NAME}/web
   script:
     - apk add --no-cache curl
@@ -55,6 +60,7 @@ deploy:
     - docker build
         --tag $HEROKU_REGISTRY_IMAGE
         --file ./Dockerfile.prod
+        --build-arg SECRET_KEY=$SECRET_KEY
         "."
     - docker login -u _ -p $HEROKU_AUTH_TOKEN registry.heroku.com
     - docker push $HEROKU_REGISTRY_IMAGE

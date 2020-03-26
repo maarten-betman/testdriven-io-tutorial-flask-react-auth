@@ -1,4 +1,4 @@
-# project/api/models.py
+# project/api/users/models.py
 
 import os
 
