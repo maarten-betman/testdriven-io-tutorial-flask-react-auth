@@ -1,4 +1,4 @@
-# project/api/ping.py
+# src/api/ping.py
 
 
 from flask_restx import Namespace, Resource

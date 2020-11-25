@@ -1,11 +1,11 @@
-# project/tests/test_users.py
+# src/tests/test_users.py
 
 
 import json
 
 import pytest
 
-from project.api.users.models import User
+from src.api.users.models import User
 
 
 def test_add_user(test_app, test_database):
@@ -22,7 +22,11 @@ def test_add_user(test_app, test_database):
 
 def test_add_user_invalid_json(test_app, test_database):
     client = test_app.test_client()
-    resp = client.post("/users", data=json.dumps({}), content_type="application/json",)
+    resp = client.post(
+        "/users",
+        data=json.dumps({}),
+        content_type="application/json",
+    )
     data = json.loads(resp.data.decode())
     assert resp.status_code == 400
     assert "Input payload validation failed" in data["message"]
@@ -98,10 +102,12 @@ def test_remove_user(test_app, test_database, add_user):
     data = json.loads(resp_one.data.decode())
     assert resp_one.status_code == 200
     assert len(data) == 1
+
     resp_two = client.delete(f"/users/{user.id}")
     data = json.loads(resp_two.data.decode())
     assert resp_two.status_code == 200
     assert "remove-me@testdriven.io was removed!" in data["message"]
+
     resp_three = client.get("/users")
     data = json.loads(resp_three.data.decode())
     assert resp_three.status_code == 200
@@ -127,6 +133,7 @@ def test_update_user(test_app, test_database, add_user):
     data = json.loads(resp_one.data.decode())
     assert resp_one.status_code == 200
     assert f"{user.id} was updated!" in data["message"]
+
     resp_two = client.get(f"/users/{user.id}")
     data = json.loads(resp_two.data.decode())
     assert resp_two.status_code == 200
@@ -152,8 +159,25 @@ def test_update_user_invalid(
 ):
     client = test_app.test_client()
     resp = client.put(
-        f"/users/{user_id}", data=json.dumps(payload), content_type="application/json",
+        f"/users/{user_id}",
+        data=json.dumps(payload),
+        content_type="application/json",
     )
     data = json.loads(resp.data.decode())
     assert resp.status_code == status_code
     assert message in data["message"]
+
+
+def test_update_user_duplicate_email(test_app, test_database, add_user):
+    add_user("hajek", "rob@hajek.org")
+    user = add_user("rob", "rob@notreal.com")
+
+    client = test_app.test_client()
+    resp = client.put(
+        f"/users/{user.id}",
+        data=json.dumps({"username": "rob", "email": "rob@notreal.com"}),
+        content_type="application/json",
+    )
+    data = json.loads(resp.data.decode())
+    assert resp.status_code == 400
+    assert "Sorry. That email already exists." in data["message"]

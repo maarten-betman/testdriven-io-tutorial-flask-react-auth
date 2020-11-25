@@ -1,10 +1,10 @@
-# project/api/users/models.py
+# src/api/models.py
 
 import os
 
 from sqlalchemy.sql import func
 
-from project import db
+from src import db
 
 
 class User(db.Model):
@@ -23,7 +23,7 @@ class User(db.Model):
 
 
 if os.getenv("FLASK_ENV") == "development":
-    from project import admin
-    from project.api.users.admin import UsersAdminView
+    from src import admin
+    from src.api.users.admin import UsersAdminView
 
     admin.add_view(UsersAdminView(User, db.session))
